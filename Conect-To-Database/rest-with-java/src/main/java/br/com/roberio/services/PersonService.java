@@ -1,67 +1,54 @@
 package br.com.roberio.services;
 
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.logging.Logger;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import br.com.roberio.exceptions.ResourceNotFoundException;
 import br.com.roberio.model.Person;
+import br.com.roberio.repository.PersonRepository;
 
 @Service
 public class PersonService {
-	private final AtomicLong counter = new AtomicLong();
 	private Logger logger = Logger.getLogger(PersonService.class.getName());
 	
-	public Person findById(String id) {
+	@Autowired
+	PersonRepository repository;
+	
+	public Person findById(Long id) {
 		logger.info("Finding one Person");
-		Person person = new Person();
-		person.setId(counter.incrementAndGet());
-		person.setFirstName("Mock 1");
-		person.setLastName("End Mock 1");
-		person.setGender("Gender Mock 1");
-		person.setAddress("Address Mock 1");
 		
-		return person;
+		return repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("No records found."));
 	}
 	
 	public List<Person> findAll() {
 		logger.info("Finding all Persons");
-		List<Person> persons = new ArrayList<>();
-		
-		for (int i = 1; i < 9; i++) {
-			Person person = mockPerson(i);
-			persons.add(person);
-		}
-		
-		return persons;
+		return repository.findAll();
 	}
 	
 	public Person create(Person person) {
 		logger.info("Creating one Person");
-		return person;
+		return repository.save(person);
 	}
 	
 	public Person update(Person person) {
 		logger.info("Updating one Person");
 		
-		return person;
+		var entity = repository.findById(person.getId()).orElseThrow(() -> new ResourceNotFoundException("No records found."));
+		entity.setFirstName(person.getFirstName());
+		entity.setLastName(person.getLastName());
+		entity.setGender(person.getGender());
+		entity.setAddress(person.getAddress());
+		
+		return repository.save(entity);
 	}
 	
-	public void delete(String id) {
+	public void delete(Long id) {
 		logger.info("Deleting one Person");
-	}
-
-	private Person mockPerson(int i) {
-		Person person = new Person();
-		person.setId(counter.incrementAndGet());
-		person.setFirstName("Mock " + i);
-		person.setLastName("End Mock " + i);
-		person.setGender("Gender Mock " + i);
-		person.setAddress("Address Mock " + i);
+		var entity = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("No records found."));
 		
-		return person;
+		repository.delete(entity);
 	}
 }

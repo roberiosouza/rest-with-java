@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.com.roberio.exceptions.UnsupportedMathOperationException;
+import br.com.roberio.exceptions.ResourceNotFoundException;
 import br.com.roberio.model.Person;
 import br.com.roberio.services.PersonService;
 
@@ -27,7 +27,7 @@ public class PersonController {
 	private PersonService service;
 	
 	@GetMapping(value = "/{id}",  produces = MediaType.APPLICATION_JSON_VALUE)
-	public Person findById(@PathVariable(value = "id") String id) {
+	public Person findById(@PathVariable(value = "id") Long id) {
 		return service.findById(id);
 	}
 	
@@ -47,7 +47,7 @@ public class PersonController {
 	}
 	
 	@DeleteMapping(value = "/{id}")
-	public void delete(@PathVariable(value = "id") String id) {
+	public void delete(@PathVariable(value = "id") Long id) {
 		service.delete(id);
 	}
 }
