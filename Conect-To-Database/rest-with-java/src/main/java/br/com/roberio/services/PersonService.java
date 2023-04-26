@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import br.com.roberio.exceptions.ResourceNotFoundException;
@@ -45,10 +46,11 @@ public class PersonService {
 		return repository.save(entity);
 	}
 	
-	public void delete(Long id) {
+	public ResponseEntity<?> delete(Long id) {
 		logger.info("Deleting one Person");
 		var entity = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("No records found."));
 		
 		repository.delete(entity);
+		return ResponseEntity.noContent().build();
 	}
 }
